@@ -1,0 +1,8 @@
+cards.json
+.passcode
+.last_hash
+.lock
+.reponame
+*.log
+*.tmp
+__pycache__/

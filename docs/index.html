@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#13695c">
+<title>서이추 폰 작업</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
+<style>
+/* 한 손으로 위에서 아래로 넘기는 카드 한 줄. 버튼은 엄지가 닿게 크게 */
+:root {
+  --bg: #f3f5f4; --surface: #ffffff; --ink: #1f2a28; --muted: #66746f; --line: #dce3e0;
+  --sea: #13695c; --sea-ink: #ffffff; --sea-soft: #e1efeb; --amber: #a4620e; --amber-soft: #fbefdc;
+  --display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141a19; --surface: #1d2523; --ink: #e6ecea; --muted: #97a6a1; --line: #2e3a37;
+  --sea: #4cc2ab; --sea-ink: #0b1f1b; --sea-soft: #1f3833; --amber: #f0b45e; --amber-soft: #3a2c17; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #141a19; --surface: #1d2523; --ink: #e6ecea; --muted: #97a6a1; --line: #2e3a37;
+  --sea: #4cc2ab; --sea-ink: #0b1f1b; --sea-soft: #1f3833; --amber: #f0b45e; --amber-soft: #3a2c17; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); padding-inline: 16px; padding-block: 0 96px; -webkit-text-size-adjust: 100%; }
+.wrap { max-width: 620px; margin: 0 auto; }
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); padding-block: 14px 10px; border-bottom: 1px solid var(--line); margin-inline: -16px; padding-inline: 16px; }
+h1 { font: 700 21px/1.3 var(--display); margin: 0; text-wrap: balance; }
+.prog { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.prog b { color: var(--ink); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.filters button { min-height: 36px; padding: 4px 14px; border-radius: 99px; font-size: 14px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.notice { background: var(--amber-soft); color: var(--ink); border-radius: 12px; padding: 12px 14px; margin-top: 14px; font-size: 14.5px; }
+.empty { text-align: center; color: var(--muted); padding: 36px 8px; }
+.empty b { color: var(--ink); display: block; font-size: 17px; margin-bottom: 4px; }
+
+#list { display: grid; gap: 14px; margin-top: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-width: 0; }
+.card.done { opacity: .55; }
+.top { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.name { font-weight: 600; font-size: 17.5px; margin-right: auto; overflow-wrap: anywhere; }
+.chip { font-size: 12.5px; padding: 1px 10px; border-radius: 99px; background: var(--sea-soft); color: var(--sea); white-space: nowrap; }
+.chip.fit-hi { background: var(--sea); color: var(--sea-ink); font-weight: 600; }
+.chip.fit-mid { background: var(--amber-soft); color: var(--amber); }
+.chip.nb { background: var(--ink); color: var(--bg); }
+.why { color: var(--muted); font-size: 13.5px; margin: 4px 0 0; }
+.analysis { color: var(--muted); font-size: 14.5px; margin: 8px 0 0; }
+.summary { background: var(--bg); border-radius: 10px; padding: 9px 12px; margin: 10px 0 0; font-size: 15px; }
+.summary:empty, .analysis:empty, .why:empty { display: none; }
+
+.step { margin-top: 14px; display: grid; gap: 8px; }
+.step > .lbl { font-size: 13.5px; color: var(--muted); }
+.step > .lbl b { color: var(--ink); font-weight: 600; }
+.title { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+textarea { width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; resize: vertical; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+a.btn, button { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 8px 12px; font: inherit; font-size: 15.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; text-align: center; cursor: pointer; }
+.primary { background: var(--sea) !important; color: var(--sea-ink) !important; border-color: var(--sea) !important; font-weight: 600; }
+a.btn:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.checks { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 14px; font-size: 15.5px; }
+.checks label { display: flex; align-items: center; gap: 6px; min-height: 36px; }
+.checks input { width: 22px; height: 22px; accent-color: var(--sea); }
+.end { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 12px; }
+
+.tools { margin-top: 26px; display: grid; gap: 12px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+summary { cursor: pointer; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+details p { font-size: 14.5px; color: var(--muted); margin: 8px 0; }
+details .row, details textarea { margin-top: 8px; }
+.danger { color: #b3261e; }
+#toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 9px 18px; border-radius: 99px; font-size: 15px; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: calc(100% - 32px); text-align: center; }
+#toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+<style>
+#lock { max-width: 620px; margin: 0 auto; padding-block: 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#lock h1 { font: 700 21px/1.3 var(--display); margin: 0 0 8px; }
+#lock p { color: var(--muted); margin: 0 0 14px; }
+#lock input { width: 100%; font: inherit; font-size: 18px; letter-spacing: .12em; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); margin-bottom: 10px; }
+.stamp { color: var(--muted); font-size: 12.5px; }
+</style>
+</head><body>
+<div id="lock" hidden>
+  <h1>서이추 폰 작업</h1>
+  <p>PC에서 알려 드린 암호를 한 번만 넣어 주세요. 이 폰에 기억해 두어요.</p>
+  <input id="pass" type="password" autocomplete="current-password" placeholder="암호" aria-label="암호">
+  <button id="passGo" class="primary" style="width:100%">열기</button>
+  <p id="passErr" style="color:#b3261e;margin-top:10px" hidden></p>
+</div>
+<div class="wrap" id="app" hidden>
+  <header>
+    <h1>서이추 폰 작업</h1>
+    <div class="prog" id="prog">카드를 불러오는 중…</div>
+    <div class="stamp" id="stamp"></div>
+    <div class="filters" id="filters"></div>
+  </header>
+  <div class="notice" id="notice" hidden></div>
+  <div id="list"></div>
+  <div class="empty" id="empty" hidden>
+    <b>할 카드가 없어요</b>
+    카드는 PC에서 서이추가 끝날 때마다 저절로 들어와요. 위의 갱신 시각을 봐 주세요.
+  </div>
+  <div class="tools">
+    <details id="doneBox">
+      <summary>끝낸 카드 · 서이추한 블로그 목록</summary>
+      <p>목록을 복사해서 PC 비서 <b>이웃</b> 탭에 붙여넣고 <b>추가</b>를 눌러 주세요. 그래야 다음에 이웃 새 글 댓글도 챙겨 줘요.</p>
+      <div class="row">
+        <button id="copyDone" class="primary">목록 복사</button>
+        <button id="toggleDone">끝낸 카드 보기</button>
+      </div>
+      <div class="row">
+        <button id="cleanup" class="danger">끝낸 카드 숨기기</button>
+        <button id="cleanupYes" class="danger" hidden>정말 숨기기</button>
+      </div>
+      <p>암호를 바꿨거나 다시 넣고 싶으면 아래를 누르세요.</p>
+      <button id="forget">이 폰에서 암호 지우기</button>
+    </details>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+(function () {
+  var PROFILE_LABEL = { cruise: '크루즈', insurance: '보험', gumon: '구몬', insta: '인스타', insta_ins: '보험 인스타', insta_gm: '구몬 인스타', insta_ar: '아로마 인스타', xhs: '샤오홍슈', etc: '기타' };
+  var cards = [];          // 스토어에서 받은 카드 (id 포함)
+  var els = {};            // 카드 id → 화면 요소
+  var filter = 'all', showDone = false;
+  try { filter = localStorage.getItem('seoichu-filter') || 'all'; } catch (e) {}
+
+  var $ = function (id) { return document.getElementById(id); };
+  function toast(t) {
+    var el = $('toast'); el.textContent = t; el.classList.add('show');
+    clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('show'); }, 1600);
+  }
+  function notice(t) { $('notice').textContent = t; $('notice').hidden = !t; }
+  function copy(text, label) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      toast(ok ? label + ' 복사됨' : '복사가 안 돼요. 글자를 길게 눌러 복사해 주세요');
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { toast(label + ' 복사됨'); }, fallback);
+    } catch (e) { fallback(); }
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function link(cls, text, href) { var a = el('a', cls, text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; }
+  function mobile(url) { return String(url || '').replace('://blog.naver.com', '://m.blog.naver.com'); }
+
+
+  // ---------- 저장 (이 폰의 localStorage) ----------
+  // 체크 · 완료 · 건너뛰기 · 고친 댓글은 이 폰에 저장돼요. 카드가 새 글로 바뀌면 예전 표시는 버려요.
+  var KEY = 'seoichu-state-v2';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast('이 폰에 저장하지 못했어요'); } }
+  function cardKey(c) { return c.type === 'insta' ? (c.postCode || '') : c.type === 'xhs' ? (c.noteId || '') : (c.latestLink || ''); }
+  function save(id, patch) {
+    var c = cards.filter(function (x) { return x.id === id; })[0];
+    if (!c) return;
+    state[id] = Object.assign({}, state[id] || {}, patch, { key: cardKey(c) });
+    persist();
+    Object.keys(patch).forEach(function (k) { c[k] = patch[k]; });
+    render();
+  }
+  function applyState(list) {
+    var ids = {};
+    list.forEach(function (c) {
+      ids[c.id] = true;
+      var s = state[c.id];
+      if (!s) return;
+      if (s.key !== cardKey(c)) { delete state[c.id]; return; }
+      Object.keys(s).forEach(function (k) { if (k !== 'key') c[k] = s[k]; });
+    });
+    Object.keys(state).forEach(function (id) { if (!ids[id]) delete state[id]; });
+    persist();
+  }
+
+  function visible(c) {
+    if (c.hidden) return false;
+    if (filter !== 'all' && c.profile !== filter) return false;
+    return showDone || !c.closed;
+  }
+  function sortKey(a, b) { return (b.sentAt || 0) - (a.sentAt || 0) || (a.order || 0) - (b.order || 0); }
+
+  function renderFilters() {
+    var profiles = [];
+    cards.forEach(function (c) { if (profiles.indexOf(c.profile) < 0) profiles.push(c.profile); });
+    var box = $('filters'); box.innerHTML = '';
+    if (profiles.length < 2) { filter = 'all'; return; }
+    [['all', '전체']].concat(profiles.map(function (p) { return [p, PROFILE_LABEL[p] || p]; })).forEach(function (f) {
+      var b = el('button', '', f[1]);
+      b.setAttribute('aria-pressed', String(filter === f[0]));
+      b.onclick = function () { filter = f[0]; try { localStorage.setItem('seoichu-filter', filter); } catch (e) {} render(); };
+      box.appendChild(b);
+    });
+  }
+
+  function renderProgress() {
+    var mine = cards.filter(function (c) { return filter === 'all' || c.profile === filter; });
+    var left = mine.filter(function (c) { return !c.closed; }).length;
+    var buddy = mine.filter(function (c) { return c.buddy; }).length;
+    var follow = mine.filter(function (c) { return c.follow; }).length;
+    var hasBlog = mine.some(function (c) { return c.type !== 'insta' && c.type !== 'xhs'; });
+    var hasInsta = mine.some(function (c) { return c.type === 'insta'; });
+    $('prog').innerHTML = '남은 카드 <b>' + left + '</b> / ' + mine.length +
+      (hasBlog || !hasInsta ? ' · 서이추 <b>' + buddy + '</b>' : '') + (hasInsta ? ' · 팔로우 <b>' + follow + '</b>' : '');
+    $('empty').hidden = !!mine.filter(visible).length;
+    $('toggleDone').textContent = showDone ? '끝낸 카드 숨기기' : '끝낸 카드 보기';
+  }
+
+  function checkRow(c, list) {
+    var checks = el('div', 'checks');
+    var boxes = {};
+    list.forEach(function (k) {
+      var lab = el('label'); var x = el('input'); x.type = 'checkbox'; x.id = k[0] + '-' + c.id;
+      x.onchange = function () { var p = {}; p[k[0]] = x.checked; save(c.id, p); };
+      lab.appendChild(x); lab.appendChild(document.createTextNode(k[1]));
+      checks.appendChild(lab); boxes[k[0]] = x;
+    });
+    return { row: checks, boxes: boxes };
+  }
+  function endRow(c) {
+    var end = el('div', 'end');
+    var skip = el('button', '', '건너뛰기');
+    var fin = el('button', 'primary', '완료');
+    skip.onclick = function () { save(c.id, { closed: 'skip' }); };
+    fin.onclick = function () { save(c.id, { closed: 'done' }); toast('완료!'); };
+    end.appendChild(skip); end.appendChild(fin);
+    return { row: end, skip: skip, fin: fin };
+  }
+
+  // 인스타 카드: 게시물 열기(♡) → 댓글 복사 (팔로우는 반응 온 뒤 PC 비서 ④에서)
+  function buildInsta(c) {
+    var card = el('article', 'card');
+    var top = el('div', 'top');
+    top.appendChild(el('span', 'name', '@' + c.username));
+    if (filter === 'all') top.appendChild(el('span', 'chip', PROFILE_LABEL[c.profile] || '인스타'));
+    var friend = c.kind === 'friend';
+    if (friend) top.appendChild(el('span', 'chip nb', '팔로우'));
+    else if (c.kind === 'revisit') top.appendChild(el('span', 'chip nb', '두 번째 인사'));
+    else if (c.keyword) top.appendChild(el('span', 'chip', '#' + c.keyword));
+    if (c.fit) top.appendChild(el('span', 'chip ' + (c.fit === '상' ? 'fit-hi' : 'fit-mid'), '고객 ' + c.fit));
+    card.appendChild(top);
+    card.appendChild(el('p', 'why', c.fitReason || ''));
+    card.appendChild(el('p', 'analysis', c.analysis || ''));
+    card.appendChild(el('p', 'summary', c.summary || ''));
+
+    var s1 = el('div', 'step');
+    var l1 = el('div', 'lbl'); l1.innerHTML = '<b>①</b> 게시물 보고 ♡ 좋아요';
+    s1.appendChild(l1);
+    s1.appendChild(link('btn primary', '게시물 열기 (인스타 앱)', 'https://www.instagram.com/p/' + encodeURIComponent(c.postCode) + '/'));
+    card.appendChild(s1);
+
+    var s2 = el('div', 'step');
+    var l2 = el('div', 'lbl'); l2.innerHTML = '<b>②</b> 댓글 복사 → 인스타로 돌아가 댓글창에 붙여넣기';
+    s2.appendChild(l2);
+    var cm = el('textarea'); cm.rows = 3; cm.id = 'cm-' + c.id; cm.value = c.comment || '';
+    s2.appendChild(cm);
+    var cb = el('button', 'primary', '댓글 복사');
+    cb.onclick = function () { copy(cm.value, '댓글'); };
+    s2.appendChild(cb);
+    card.appendChild(s2);
+    var t1; cm.oninput = function () { clearTimeout(t1); t1 = setTimeout(function () { save(c.id, { comment: cm.value }); }, 800); };
+
+    // 2026-10-08 팔로우는 바로 하지 않음 — 반응이 오면 PC 비서 ④에서 「반응 옴」 → 팔로우
+    if (!friend && c.kind !== 'revisit') {
+      var s3 = el('div', 'step');
+      var l3 = el('div', 'lbl'); l3.innerHTML = '<b>참고</b> 프로필 보기 (' + (c.profile === 'insta_ins' ? '설계사·업체 계정이면' : c.profile === 'insta_gm' ? '학원·강사 계정이면' : c.profile === 'insta_ar' ? '쇼핑몰·브랜드 공식 계정이면' : '크루즈 사진이 보이면') + ' 건너뛰기) · 팔로우는 아직 하지 않아요';
+      s3.appendChild(l3);
+      s3.appendChild(link('btn', '프로필 보기', 'https://www.instagram.com/' + encodeURIComponent(c.username) + '/'));
+      card.appendChild(s3);
+    }
+
+    var ch = checkRow(c, [['like', '좋아요'], ['commented', '댓글']]);
+    card.appendChild(ch.row);
+    var end = endRow(c);
+    card.appendChild(end.row);
+    return { root: card, cm: cm, bm: null, boxes: ch.boxes, fin: end.fin, skip: end.skip };
+  }
+
+  // 샤오홍슈 카드 (2026-10-31): 노트 열기(♡) → 중국어 댓글 복사 (뜻은 한국어로 같이 보임). 댓글·좋아요는 직접
+  function buildXhs(c) {
+    var card = el('article', 'card');
+    var top = el('div', 'top');
+    top.appendChild(el('span', 'name', c.author || c.noteId));
+    if (filter === 'all') top.appendChild(el('span', 'chip', PROFILE_LABEL[c.profile] || '샤오홍슈'));
+    if (c.fit) top.appendChild(el('span', 'chip ' + (c.fit === '상' ? 'fit-hi' : 'fit-mid'), '손님감 ' + c.fit));
+    card.appendChild(top);
+    card.appendChild(el('p', 'why', c.fitReason || ''));
+    card.appendChild(el('p', 'summary', (c.title ? c.title + ' · ' : '') + (c.summary || '')));
+
+    var okUrl = /^https:\/\/([a-z0-9-]+\.)*(rednote|xiaohongshu)\.com\//.test(String(c.url || ''));
+    var s1 = el('div', 'step');
+    var l1 = el('div', 'lbl'); l1.innerHTML = '<b>①</b> 노트 보고 ♡ 좋아요';
+    s1.appendChild(l1);
+    s1.appendChild(link('btn primary', '노트 열기 (샤오홍슈)', okUrl ? c.url : 'https://www.rednote.com/'));
+    card.appendChild(s1);
+
+    var s2 = el('div', 'step');
+    var l2 = el('div', 'lbl'); l2.innerHTML = '<b>②</b> 댓글 복사 → 샤오홍슈 댓글창에 붙여넣기';
+    s2.appendChild(l2);
+    var cm = el('textarea'); cm.rows = 2; cm.id = 'cm-' + c.id; cm.value = c.comment || '';
+    s2.appendChild(cm);
+    s2.appendChild(el('div', 'title', c.commentKo ? '뜻: ' + c.commentKo : ''));
+    var cb = el('button', 'primary', '댓글 복사');
+    cb.onclick = function () { copy(cm.value, '댓글'); };
+    s2.appendChild(cb);
+    card.appendChild(s2);
+    var t1; cm.oninput = function () { clearTimeout(t1); t1 = setTimeout(function () { save(c.id, { comment: cm.value }); }, 800); };
+
+    var ch = checkRow(c, [['like', '좋아요'], ['commented', '댓글']]);
+    card.appendChild(ch.row);
+    var end = endRow(c);
+    card.appendChild(end.row);
+    return { root: card, cm: cm, bm: null, boxes: ch.boxes, fin: end.fin, skip: end.skip };
+  }
+
+  function buildCard(c) {
+    if (c.type === 'insta') return buildInsta(c);
+    if (c.type === 'xhs') return buildXhs(c);
+    var card = el('article', 'card');
+    var top = el('div', 'top');
+    top.appendChild(el('span', 'name', c.blogName || c.blogId));
+    if (filter === 'all' && PROFILE_LABEL[c.profile]) top.appendChild(el('span', 'chip', PROFILE_LABEL[c.profile]));
+    if (c.type === 'neighbor') top.appendChild(el('span', 'chip nb', '이웃'));
+    else if (c.keyword) top.appendChild(el('span', 'chip', c.keyword));
+    if (c.fit) top.appendChild(el('span', 'chip ' + (c.fit === '상' ? 'fit-hi' : 'fit-mid'), '고객 ' + c.fit));
+    card.appendChild(top);
+    card.appendChild(el('p', 'why', c.fitReason || ''));
+    card.appendChild(el('p', 'analysis', c.analysis || ''));
+    card.appendChild(el('p', 'summary', c.summary || ''));
+
+    var s1 = el('div', 'step');
+    var l1 = el('div', 'lbl'); l1.innerHTML = '<b>①</b> 최신 글 읽고 ♡ 좋아요';
+    s1.appendChild(l1);
+    s1.appendChild(link('btn primary', '최신 글 열기', mobile(c.latestLink || 'https://blog.naver.com/' + c.blogId)));
+    if (c.latestTitle) s1.appendChild(el('div', 'title', c.latestTitle));
+    card.appendChild(s1);
+
+    var s2 = el('div', 'step');
+    var l2 = el('div', 'lbl'); l2.innerHTML = '<b>②</b> 댓글 복사 → 댓글창에 붙여넣기';
+    s2.appendChild(l2);
+    var cm = el('textarea'); cm.rows = 4; cm.id = 'cm-' + c.id; cm.value = c.comment || '';
+    s2.appendChild(cm);
+    var cb = el('button', 'primary', '댓글 복사');
+    cb.onclick = function () { copy(cm.value, '댓글'); };
+    s2.appendChild(cb);
+    card.appendChild(s2);
+    var t1; cm.oninput = function () { clearTimeout(t1); t1 = setTimeout(function () { save(c.id, { comment: cm.value }); }, 800); };
+
+    var bm = null;
+    if (c.type !== 'neighbor') {
+      var s3 = el('div', 'step');
+      var l3 = el('div', 'lbl'); l3.innerHTML = '<b>③</b> 멘트 복사 → 서이추 화면에 붙여넣기 → 신청';
+      s3.appendChild(l3);
+      bm = el('textarea'); bm.rows = 2; bm.id = 'bm-' + c.id; bm.value = c.buddyMessage || '';
+      s3.appendChild(bm);
+      var r = el('div', 'row');
+      var mb = el('button', 'primary', '멘트 복사');
+      mb.onclick = function () { copy(bm.value, '서이추 멘트'); };
+      r.appendChild(mb);
+      r.appendChild(link('btn', '서이추 화면', 'https://m.blog.naver.com/BuddyAddForm.naver?blogId=' + encodeURIComponent(c.blogId)));
+      s3.appendChild(r);
+      s3.appendChild(link('btn', '블로그 홈 (서이추 화면이 안 열릴 때)', 'https://m.blog.naver.com/' + encodeURIComponent(c.blogId)));
+      card.appendChild(s3);
+      var t2; bm.oninput = function () { clearTimeout(t2); t2 = setTimeout(function () { save(c.id, { buddyMessage: bm.value }); }, 800); };
+    }
+
+    var checks = el('div', 'checks');
+    var boxes = {};
+    [['like', '좋아요'], ['commented', '댓글'], ['buddy', '서이추']].forEach(function (k) {
+      if (k[0] === 'buddy' && c.type === 'neighbor') return;
+      var lab = el('label'); var x = el('input'); x.type = 'checkbox'; x.id = k[0] + '-' + c.id;
+      x.onchange = function () { var p = {}; p[k[0]] = x.checked; save(c.id, p); };
+      lab.appendChild(x); lab.appendChild(document.createTextNode(k[1]));
+      checks.appendChild(lab); boxes[k[0]] = x;
+    });
+    card.appendChild(checks);
+
+    var end = el('div', 'end');
+    var skip = el('button', '', '건너뛰기');
+    var fin = el('button', 'primary', '완료');
+    skip.onclick = function () { save(c.id, { closed: 'skip' }); };
+    fin.onclick = function () { save(c.id, { closed: 'done' }); toast('완료!'); };
+    end.appendChild(skip); end.appendChild(fin);
+    card.appendChild(end);
+
+    return { root: card, cm: cm, bm: bm, boxes: boxes, fin: fin, skip: skip };
+  }
+
+  // 카드 내용 맞추기. 지금 쓰고 있는 칸은 건드리지 않음
+  function sync(v, c) {
+    var active = document.activeElement;
+    if (v.cm !== active && v.cm.value !== (c.comment || '')) v.cm.value = c.comment || '';
+    if (v.bm && v.bm !== active && v.bm.value !== (c.buddyMessage || '')) v.bm.value = c.buddyMessage || '';
+    Object.keys(v.boxes).forEach(function (k) { v.boxes[k].checked = !!c[k]; });
+    v.root.classList.toggle('done', !!c.closed);
+    v.fin.textContent = c.closed === 'done' ? '완료됨' : '완료';
+    v.skip.textContent = c.closed === 'skip' ? '건너뜀' : '건너뛰기';
+  }
+
+  function render() {
+    renderFilters();
+    var list = $('list');
+    var shown = cards.filter(visible).sort(sortKey);
+    var keep = {};
+    shown.forEach(function (c, i) {
+      var v = els[c.id];
+      if (!v || v.profileShown !== (filter === 'all')) { if (v) v.root.remove(); v = els[c.id] = buildCard(c); v.profileShown = filter === 'all'; }
+      sync(v, c);
+      keep[c.id] = true;
+      if (list.children[i] !== v.root) list.insertBefore(v.root, list.children[i] || null);
+    });
+    Object.keys(els).forEach(function (id) { if (!keep[id]) { els[id].root.remove(); delete els[id]; } });
+    renderProgress();
+  }
+
+  // ---------- 암호 풀기 · 불러오기 ----------
+  function b64(s) { var bin = atob(s), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; }
+  async function decrypt(pass, j) {
+    var enc = new TextEncoder();
+    var base = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
+    var key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(j.salt), iterations: j.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(j.iv) }, key, b64(j.ct));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+  var PASS_KEY = 'seoichu-pass';
+  function getPass() { try { return localStorage.getItem(PASS_KEY) || ''; } catch (e) { return ''; } }
+  function showLock(msg) {
+    $('app').hidden = true; $('lock').hidden = false;
+    $('passErr').hidden = !msg; $('passErr').textContent = msg || '';
+  }
+  async function load(pass, quiet) {
+    var r;
+    try { r = await fetch('cards.enc.json?v=' + Date.now(), { cache: 'no-store' }); }
+    catch (e) { if (!quiet) { $('app').hidden = false; $('lock').hidden = true; notice('인터넷에 연결되지 않았어요. 연결되면 다시 불러와요.'); } return; }
+    if (!r.ok) { $('app').hidden = false; $('lock').hidden = true; notice('카드 파일이 아직 없어요. PC에서 첫 서이추가 끝나면 생겨요.'); return; }
+    var j = await r.json();
+    var list;
+    try { list = await decrypt(pass, j); } catch (e) { showLock('암호가 맞지 않아요. PC에서 알려 드린 암호를 다시 확인해 주세요.'); return; }
+    try { localStorage.setItem(PASS_KEY, pass); } catch (e) {}
+    $('lock').hidden = true; $('app').hidden = false; notice('');
+    cards = list;
+    applyState(cards);
+    var d = new Date(j.updatedAt);
+    $('stamp').textContent = isNaN(d) ? '' : '카드 갱신 ' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    render();
+  }
+  $('passGo').onclick = function () { var p = $('pass').value.trim(); if (p) load(p); };
+  $('pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('passGo').click(); });
+  $('forget').onclick = function () { try { localStorage.removeItem(PASS_KEY); } catch (e) {} showLock(''); };
+
+  $('copyDone').onclick = function () {
+    var ids = cards.filter(function (c) { return c.buddy && c.type !== 'neighbor' && (filter === 'all' || c.profile === filter); })
+      .map(function (c) { return 'https://blog.naver.com/' + c.blogId; });
+    if (!ids.length) return toast('서이추에 체크한 블로그가 없어요');
+    copy(ids.join('\n'), '서이추 ' + ids.length + '명 목록');
+  };
+  $('toggleDone').onclick = function () { showDone = !showDone; render(); };
+  $('cleanup').onclick = function () {
+    var n = cards.filter(function (c) { return c.closed && !c.hidden && (filter === 'all' || c.profile === filter); }).length;
+    if (!n) return toast('숨길 끝낸 카드가 없어요');
+    $('cleanupYes').hidden = false; $('cleanupYes').textContent = '끝낸 카드 ' + n + '장 숨기기';
+    toast('목록을 복사해 두었는지 확인하고 눌러 주세요');
+  };
+  $('cleanupYes').onclick = function () {
+    $('cleanupYes').hidden = true;
+    var del = cards.filter(function (c) { return c.closed && !c.hidden && (filter === 'all' || c.profile === filter); });
+    del.forEach(function (c) { state[c.id] = Object.assign({}, state[c.id] || {}, { hidden: true, key: cardKey(c) }); c.hidden = true; });
+    persist(); render(); toast(del.length + '장 숨겼어요');
+  };
+
+  // 앱을 다시 열거나 5분이 지나면 새 카드를 가져와요
+  setInterval(function () { var p = getPass(); if (p && !document.hidden) load(p, true); }, 300000);
+  document.addEventListener('visibilitychange', function () { var p = getPass(); if (!document.hidden && p) load(p, true); });
+
+  var p0 = getPass();
+  if (p0) load(p0); else showLock('');
+})();
+</script>
+</body></html>
