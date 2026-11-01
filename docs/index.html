@@ -97,6 +97,14 @@ details .row, details textarea { margin-top: 8px; }
     <div class="filters" id="filters"></div>
   </header>
   <div class="notice" id="notice" hidden></div>
+  <div class="notice" id="phonePick" hidden>
+    <b>이 폰은 몇 번 폰인가요?</b> 한 번만 골라 주세요. 그 폰에 맞는 카드만 보여요.
+    <div style="display:grid;gap:8px;margin-top:10px">
+      <button class="primary" data-ph="1">1번 폰 · 구몬 · 아로마</button>
+      <button class="primary" data-ph="2">2번 폰 · 크루즈 · 샤오홍슈</button>
+      <button class="primary" data-ph="3">3번 폰 · 보험</button>
+    </div>
+  </div>
   <div id="list"></div>
   <div class="empty" id="empty" hidden>
     <b>할 카드가 없어요</b>
@@ -114,8 +122,11 @@ details .row, details textarea { margin-top: 8px; }
         <button id="cleanup" class="danger">끝낸 카드 숨기기</button>
         <button id="cleanupYes" class="danger" hidden>정말 숨기기</button>
       </div>
-      <p>암호를 바꿨거나 다시 넣고 싶으면 아래를 누르세요.</p>
-      <button id="forget">이 폰에서 암호 지우기</button>
+      <p>폰 번호를 다시 고르거나 암호를 다시 넣고 싶으면 아래를 누르세요.</p>
+      <div class="row">
+        <button id="repick">폰 번호 다시 고르기</button>
+        <button id="forget">암호 지우기</button>
+      </div>
     </details>
   </div>
 </div>
@@ -435,6 +446,36 @@ details .row, details textarea { margin-top: 8px; }
     var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(j.iv) }, key, b64(j.ct));
     return JSON.parse(new TextDecoder().decode(plain));
   }
+  // 폰마다 보이는 카드: 1번 구몬·아로마 / 2번 크루즈·샤오홍슈 / 3번 보험 (주소 뒤에 ?p=1 · ?p=2 · ?p=3 을 붙여도 정해져요)
+  var PHONE_KEY = 'seoichu-phone';
+  var PHONES = {
+    '1': { name: '1번 폰', p: ['gumon', 'insta_gm', 'insta_ar'] },
+    '2': { name: '2번 폰', p: ['cruise', 'insta', 'xhs'] },
+    '3': { name: '3번 폰', p: ['insurance', 'insta_ins'] }
+  };
+  function getPhone() {
+    var q = (location.search.match(/[?&]p=([123])/) || [])[1];
+    if (q) { try { localStorage.setItem(PHONE_KEY, q); } catch (e) {} return q; }
+    try { return localStorage.getItem(PHONE_KEY) || ''; } catch (e) { return ''; }
+  }
+  function forPhone(list) {
+    var ph = getPhone();
+    if (!ph || !PHONES[ph]) return [];   // 폰 번호를 고르기 전에는 카드를 보여 주지 않는다
+    return list.filter(function (c) { return PHONES[ph].p.indexOf(c.profile) >= 0 || c.profile === 'etc'; });
+  }
+  var allCards = [];
+  function showCards() {
+    var ph = getPhone();
+    $('phonePick').hidden = !!(ph && PHONES[ph]);
+    cards = forPhone(allCards);
+    applyState(cards);
+    render();
+    if (!(ph && PHONES[ph])) { $('empty').hidden = true; $('prog').textContent = ''; }
+  }
+  document.querySelectorAll('#phonePick button[data-ph]').forEach(function (b) {
+    b.onclick = function () { try { localStorage.setItem(PHONE_KEY, b.dataset.ph); } catch (e) {} filter = 'all'; showCards(); window.scrollTo(0, 0); };
+  });
+  $('repick').onclick = function () { try { localStorage.removeItem(PHONE_KEY); } catch (e) {} showCards(); window.scrollTo(0, 0); };
   var PASS_KEY = 'seoichu-pass';
   function getPass() { try { return localStorage.getItem(PASS_KEY) || ''; } catch (e) { return ''; } }
   function showLock(msg) {
@@ -451,11 +492,10 @@ details .row, details textarea { margin-top: 8px; }
     try { list = await decrypt(pass, j); } catch (e) { showLock('암호가 맞지 않아요. PC에서 알려 드린 암호를 다시 확인해 주세요.'); return; }
     try { localStorage.setItem(PASS_KEY, pass); } catch (e) {}
     $('lock').hidden = true; $('app').hidden = false; notice('');
-    cards = list;
-    applyState(cards);
+    allCards = list;
     var d = new Date(j.updatedAt);
     $('stamp').textContent = isNaN(d) ? '' : '카드 갱신 ' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-    render();
+    showCards();
   }
   $('passGo').onclick = function () { var p = $('pass').value.trim(); if (p) load(p); };
   $('pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('passGo').click(); });
