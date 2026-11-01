@@ -286,7 +286,7 @@ details .row, details textarea { margin-top: 8px; }
   function sortKey(a, b) { return (b.sentAt || 0) - (a.sentAt || 0) || (a.order || 0) - (b.order || 0); }
 
   // 위쪽 탭: 카드가 없어도 모든 계정 탭을 늘 보여 준다 (폰 번호를 골랐으면 그 폰 계정만). 숫자 = 아직 안 끝낸 카드
-  var TAB_ORDER = ['cruise', 'insta', 'gumon', 'insta_gm', 'insurance', 'insta_ins', 'insta_ar', 'xhs'];
+  var TAB_ORDER = ['cruise', 'gumon', 'insurance', 'insta_gm', 'insta_ar', 'insta_ins', 'insta', 'xhs'];
   function renderFilters() {
     var ph = (typeof getPhone === 'function') ? getPhone() : '';
     var allowed = (ph && PHONES[ph]) ? PHONES[ph].p : TAB_ORDER;
