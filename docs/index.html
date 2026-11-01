@@ -285,13 +285,19 @@ details .row, details textarea { margin-top: 8px; }
   }
   function sortKey(a, b) { return (b.sentAt || 0) - (a.sentAt || 0) || (a.order || 0) - (b.order || 0); }
 
+  // 위쪽 탭: 카드가 없어도 모든 계정 탭을 늘 보여 준다 (폰 번호를 골랐으면 그 폰 계정만). 숫자 = 아직 안 끝낸 카드
+  var TAB_ORDER = ['cruise', 'insta', 'gumon', 'insta_gm', 'insurance', 'insta_ins', 'insta_ar', 'xhs'];
   function renderFilters() {
-    var profiles = [];
+    var ph = (typeof getPhone === 'function') ? getPhone() : '';
+    var allowed = (ph && PHONES[ph]) ? PHONES[ph].p : TAB_ORDER;
+    var profiles = TAB_ORDER.filter(function (p) { return allowed.indexOf(p) >= 0; });
     cards.forEach(function (c) { if (profiles.indexOf(c.profile) < 0) profiles.push(c.profile); });
     var box = $('filters'); box.innerHTML = '';
-    if (profiles.length < 2) { filter = 'all'; return; }
+    if (profiles.indexOf(filter) < 0 && filter !== 'all') filter = 'all';
+    var left = function (p) { return cards.filter(function (c) { return (p === 'all' || c.profile === p) && !c.closed && !c.hidden; }).length; };
     [['all', '전체']].concat(profiles.map(function (p) { return [p, PROFILE_LABEL[p] || p]; })).forEach(function (f) {
-      var b = el('button', '', f[1]);
+      var n = left(f[0]);
+      var b = el('button', '', f[1] + (n ? ' ' + n : ''));
       b.setAttribute('aria-pressed', String(filter === f[0]));
       b.onclick = function () { filter = f[0]; try { localStorage.setItem('seoichu-filter', filter); } catch (e) {} render(); };
       box.appendChild(b);
