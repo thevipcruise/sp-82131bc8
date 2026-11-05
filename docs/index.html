@@ -4,7 +4,8 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#13695c">
 <title>서이추 폰 작업</title>
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.end button.never{color:#b3261e;border-color:#b3261e;background:transparent}
+</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
 <style>
 /* 한 손으로 위에서 아래로 넘기는 카드 한 줄. 버튼은 엄지가 닿게 크게 */
@@ -330,14 +331,25 @@ details .row, details textarea { margin-top: 8px; }
     });
     return { row: checks, boxes: boxes };
   }
+  // 앞으로 추천하지 않기 — 건너뛰기와 별개. 이 사람은 PC 서이추 비서가 다음부터 후보로 올리지 않음
+  function neverBtn(c) {
+    var b = el('button', 'never', '추천 안 함');
+    b.onclick = function () {
+      if (c.never) { save(c.id, { never: false }); toast('추천 안 함 취소'); return; }
+      if (!confirm('이 사람을 앞으로 추천하지 않을까요?')) return;
+      save(c.id, { never: true, closed: 'skip' }); toast('앞으로 추천하지 않아요');
+    };
+    return b;
+  }
   function endRow(c) {
     var end = el('div', 'end');
     var skip = el('button', '', '건너뛰기');
     var fin = el('button', 'primary', '완료');
     skip.onclick = function () { save(c.id, { closed: 'skip' }); };
     fin.onclick = function () { save(c.id, { closed: 'done' }); toast('완료!'); };
-    end.appendChild(skip); end.appendChild(fin);
-    return { row: end, skip: skip, fin: fin };
+    var nev = neverBtn(c);
+    end.appendChild(nev); end.appendChild(skip); end.appendChild(fin);
+    return { row: end, skip: skip, fin: fin, nev: nev };
   }
 
   // 인스타 카드: 게시물 열기(♡) → 댓글 복사 (팔로우는 반응 온 뒤 PC 비서 ④에서)
@@ -493,10 +505,11 @@ details .row, details textarea { margin-top: 8px; }
     var fin = el('button', 'primary', '완료');
     skip.onclick = function () { save(c.id, { closed: 'skip' }); };
     fin.onclick = function () { save(c.id, { closed: 'done' }); toast('완료!'); };
-    end.appendChild(skip); end.appendChild(fin);
+    var nev = neverBtn(c);
+    end.appendChild(nev); end.appendChild(skip); end.appendChild(fin);
     card.appendChild(end);
 
-    return { root: card, cm: cm, bm: bm, boxes: boxes, fin: fin, skip: skip };
+    return { root: card, cm: cm, bm: bm, boxes: boxes, fin: fin, skip: skip, nev: nev };
   }
 
   // 카드 내용 맞추기. 지금 쓰고 있는 칸은 건드리지 않음
@@ -508,6 +521,7 @@ details .row, details textarea { margin-top: 8px; }
     v.root.classList.toggle('done', !!c.closed);
     v.fin.textContent = c.closed === 'done' ? '완료됨' : '완료';
     v.skip.textContent = c.closed === 'skip' ? '건너뜀' : '건너뛰기';
+    if (v.nev) v.nev.textContent = c.never ? '추천 안 함 ✓' : '추천 안 함';
   }
 
   function render() {
