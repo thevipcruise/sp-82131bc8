@@ -414,9 +414,9 @@ details .row, details textarea { margin-top: 8px; }
 
     var okUrl = /^https:\/\/([a-z0-9-]+\.)*(rednote|xiaohongshu)\.com\//.test(String(c.url || ''));
     var s1 = el('div', 'step');
-    var l1 = el('div', 'lbl'); l1.innerHTML = '<b>①</b> 노트 보고 ♡ 좋아요';
+    var l1 = el('div', 'lbl'); l1.innerHTML = c.search ? '<b>①</b> 검색 결과에서 마음에 드는 노트를 열어 ♡ 좋아요' : '<b>①</b> 노트 보고 ♡ 좋아요';
     s1.appendChild(l1);
-    s1.appendChild(link('btn primary', '노트 열기 (샤오홍슈)', okUrl ? c.url : 'https://www.rednote.com/'));
+    s1.appendChild(link('btn primary', c.search ? '검색 열기 (샤오홍슈)' : '노트 열기 (샤오홍슈)', okUrl ? c.url : 'https://www.rednote.com/'));
     card.appendChild(s1);
 
     var s2 = el('div', 'step');
