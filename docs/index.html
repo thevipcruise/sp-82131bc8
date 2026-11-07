@@ -102,7 +102,7 @@ details .row, details textarea { margin-top: 8px; }
     <b>이 폰에 맞는 카드만 보고 싶으면 골라 주세요.</b> 고르지 않아도 위쪽 탭을 눌러 계정을 고를 수 있어요.
     <div style="display:grid;gap:8px;margin-top:10px">
       <button class="primary" data-ph="1">1번 폰 · 구몬 · 아로마</button>
-      <button class="primary" data-ph="2">2번 폰 · 크루즈 · 샤오홍슈</button>
+      <button class="primary" data-ph="2">2번 폰 · 크루즈</button>
       <button class="primary" data-ph="3">3번 폰 · 보험</button>
       <button data-ph="0">전체 보기 (탭으로 고를게요)</button>
     </div>
@@ -289,7 +289,7 @@ details .row, details textarea { margin-top: 8px; }
   function sortKey(a, b) { return (b.sentAt || 0) - (a.sentAt || 0) || (a.order || 0) - (b.order || 0); }
 
   // 위쪽 탭: 카드가 없어도 모든 계정 탭을 늘 보여 준다 (폰 번호를 골랐으면 그 폰 계정만). 숫자 = 아직 안 끝낸 카드
-  var TAB_ORDER = ['cruise', 'gumon', 'insurance', 'insta_gm', 'insta_ar', 'insta_ins', 'insta', 'xhs'];
+  var TAB_ORDER = ['cruise', 'gumon', 'insurance', 'insta_gm', 'insta_ar', 'insta_ins', 'insta'];
   function renderFilters() {
     var ph = (typeof getPhone === 'function') ? getPhone() : '';
     var allowed = (ph && PHONES[ph]) ? PHONES[ph].p : TAB_ORDER;
@@ -555,7 +555,7 @@ details .row, details textarea { margin-top: 8px; }
   var PHONE_KEY = 'seoichu-phone';
   var PHONES = {
     '1': { name: '1번 폰', p: ['gumon', 'insta_gm', 'insta_ar'] },
-    '2': { name: '2번 폰', p: ['cruise', 'insta', 'xhs'] },
+    '2': { name: '2번 폰', p: ['cruise', 'insta'] },
     '3': { name: '3번 폰', p: ['insurance', 'insta_ins'] }
   };
   function getPhone() {
