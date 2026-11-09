@@ -184,7 +184,7 @@ details .row, details textarea { margin-top: 8px; }
     // 안드로이드는 intent 주소(패키지를 콕 집음)로 보내면 「어떤 브라우저로 열까요」 팝업 없이 인스타 앱이 바로 열린다. 앱이 없으면 웹 주소로 간다.
     var href = deep || web;
     if (deep && /Android/i.test(navigator.userAgent)) {
-      href = 'intent://' + deep.replace(/^instagram:\/\//, '') + '#Intent;package=com.instagram.android;scheme=instagram;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+      href = 'intent://' + web.replace(/^https:\/\//, '') + '#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';   // 인스타 앱이 가장 확실하게 알아듣는 https 게시물·프로필 주소를 앱 지정으로 넘긴다
     }
     var a = el('a', cls, text); a.href = href; a.rel = 'noopener';
     if (deep) a.onclick = function () {
