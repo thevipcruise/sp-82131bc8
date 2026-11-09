@@ -172,6 +172,25 @@ details .row, details textarea { margin-top: 8px; }
     return e;
   }
   function link(cls, text, href) { var a = el('a', cls, text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; }
+  // 2026-11-09 사용자 「인스타 사이트로 갔다가 앱으로 가」 — 인스타 앱 주소(instagram://)로 바로 열고, 앱이 없어 그대로 남아 있으면 1.3초 뒤 웹 주소로 간다
+  function igMediaId(code) {
+    var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', n = 0n;
+    for (var i = 0; i < code.length; i++) { var k = A.indexOf(code[i]); if (k < 0) return ''; n = n * 64n + BigInt(k); }
+    return n.toString();
+  }
+  function igLink(cls, text, deep, web) {
+    var a = el('a', cls, text); a.href = web; a.rel = 'noopener';
+    a.onclick = function (e) {
+      if (!deep) return;
+      e.preventDefault();
+      var t0 = Date.now(), hidden = false;
+      var onVis = function () { if (document.hidden) hidden = true; };
+      document.addEventListener('visibilitychange', onVis);
+      window.location.href = deep;
+      setTimeout(function () { document.removeEventListener('visibilitychange', onVis); if (!hidden && !document.hidden) window.location.href = web; }, 1300);
+    };
+    return a;
+  }
   function mobile(url) { return String(url || '').replace('://blog.naver.com', '://m.blog.naver.com'); }
 
 
@@ -371,7 +390,8 @@ details .row, details textarea { margin-top: 8px; }
     var s1 = el('div', 'step');
     var l1 = el('div', 'lbl'); l1.innerHTML = '<b>①</b> 게시물 보고 ♡ 좋아요';
     s1.appendChild(l1);
-    s1.appendChild(link('btn primary', '게시물 열기 (인스타 앱)', 'https://www.instagram.com/p/' + encodeURIComponent(c.postCode) + '/'));
+    var mid = igMediaId(String(c.postCode || '').slice(0, 11));
+    s1.appendChild(igLink('btn primary', '게시물 열기 (인스타 앱)', mid ? 'instagram://media?id=' + mid : '', 'https://www.instagram.com/p/' + encodeURIComponent(c.postCode) + '/'));
     card.appendChild(s1);
 
     var s2 = el('div', 'step');
@@ -390,7 +410,7 @@ details .row, details textarea { margin-top: 8px; }
       var s3 = el('div', 'step');
       var l3 = el('div', 'lbl'); l3.innerHTML = '<b>참고</b> 프로필 보기 (' + (c.profile === 'insta_ins' ? '설계사·업체 계정이면' : c.profile === 'insta_gm' ? '학원·강사 계정이면' : c.profile === 'insta_ar' ? '쇼핑몰·브랜드 공식 계정이면' : '크루즈 사진이 보이면') + ' 건너뛰기) · 팔로우는 아직 하지 않아요';
       s3.appendChild(l3);
-      s3.appendChild(link('btn', '프로필 보기', 'https://www.instagram.com/' + encodeURIComponent(c.username) + '/'));
+      s3.appendChild(igLink('btn', '프로필 보기', 'instagram://user?username=' + encodeURIComponent(c.username), 'https://www.instagram.com/' + encodeURIComponent(c.username) + '/'));
       card.appendChild(s3);
     }
 
