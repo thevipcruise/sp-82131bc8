@@ -181,7 +181,12 @@ details .row, details textarea { margin-top: 8px; }
   function igLink(cls, text, deep, web) {
     // 홈 화면 아이콘(독립 실행 웹앱)에서는 코드로 주소를 바꾸면 앱 주소가 막히는 폰이 있어서, 버튼 자체가 앱 주소(instagram://)를 가리키게 하고 그대로 누르게 한다.
     // 앱이 안 열려서 이 화면이 그대로면 1.5초 뒤에 웹 주소로 간다.
-    var a = el('a', cls, text); a.href = deep || web; a.rel = 'noopener';
+    // 안드로이드는 intent 주소(패키지를 콕 집음)로 보내면 「어떤 브라우저로 열까요」 팝업 없이 인스타 앱이 바로 열린다. 앱이 없으면 웹 주소로 간다.
+    var href = deep || web;
+    if (deep && /Android/i.test(navigator.userAgent)) {
+      href = 'intent://' + deep.replace(/^instagram:\/\//, '') + '#Intent;package=com.instagram.android;scheme=instagram;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+    }
+    var a = el('a', cls, text); a.href = href; a.rel = 'noopener';
     if (deep) a.onclick = function () {
       var hidden = false;
       var onVis = function () { if (document.hidden) hidden = true; };
