@@ -179,15 +179,14 @@ details .row, details textarea { margin-top: 8px; }
     return n.toString();
   }
   function igLink(cls, text, deep, web) {
-    var a = el('a', cls, text); a.href = web; a.rel = 'noopener';
-    a.onclick = function (e) {
-      if (!deep) return;
-      e.preventDefault();
-      var t0 = Date.now(), hidden = false;
+    // 홈 화면 아이콘(독립 실행 웹앱)에서는 코드로 주소를 바꾸면 앱 주소가 막히는 폰이 있어서, 버튼 자체가 앱 주소(instagram://)를 가리키게 하고 그대로 누르게 한다.
+    // 앱이 안 열려서 이 화면이 그대로면 1.5초 뒤에 웹 주소로 간다.
+    var a = el('a', cls, text); a.href = deep || web; a.rel = 'noopener';
+    if (deep) a.onclick = function () {
+      var hidden = false;
       var onVis = function () { if (document.hidden) hidden = true; };
       document.addEventListener('visibilitychange', onVis);
-      window.location.href = deep;
-      setTimeout(function () { document.removeEventListener('visibilitychange', onVis); if (!hidden && !document.hidden) window.location.href = web; }, 1300);
+      setTimeout(function () { document.removeEventListener('visibilitychange', onVis); if (!hidden && !document.hidden) window.location.href = web; }, 1500);
     };
     return a;
   }
