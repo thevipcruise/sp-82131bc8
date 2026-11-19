@@ -182,12 +182,15 @@ details .row, details textarea { margin-top: 8px; }
     // 홈 화면 아이콘(독립 실행 웹앱)에서는 코드로 주소를 바꾸면 앱 주소가 막히는 폰이 있어서, 버튼 자체가 앱 주소(instagram://)를 가리키게 하고 그대로 누르게 한다.
     // 앱이 안 열려서 이 화면이 그대로면 1.5초 뒤에 웹 주소로 간다.
     // 안드로이드는 intent 주소(패키지를 콕 집음)로 보내면 「어떤 브라우저로 열까요」 팝업 없이 인스타 앱이 바로 열린다. 앱이 없으면 웹 주소로 간다.
-    var href = deep || web;
+    var href = deep || web, intent = false;
     if (deep && /Android/i.test(navigator.userAgent)) {
+      intent = true;
       href = 'intent://' + web.replace(/^https:\/\//, '') + '#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';   // 인스타 앱이 가장 확실하게 알아듣는 https 게시물·프로필 주소를 앱 지정으로 넘긴다
     }
     var a = el('a', cls, text); a.href = href; a.rel = 'noopener';
-    if (deep) a.onclick = function () {
+    // 2026-11-19 사용자 「게시물로 이동하면 인터넷창에 한번 걸려」 — 안드로이드 intent 는 앱이 없을 때 스스로 웹으로 간다.
+    //   그런데 1.5초 타이머가 앱이 뜨는 중에도 웹 주소로 바꿔 인터넷 창이 한 번 더 열렸다 → intent 일 때는 타이머를 쓰지 않는다.
+    if (deep && !intent) a.onclick = function () {
       var hidden = false;
       var onVis = function () { if (document.hidden) hidden = true; };
       document.addEventListener('visibilitychange', onVis);
