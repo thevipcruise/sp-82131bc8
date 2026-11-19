@@ -309,7 +309,9 @@ details .row, details textarea { margin-top: 8px; }
     if (filter !== 'all' && c.profile !== filter) return false;
     return showDone || !c.closed;
   }
-  function sortKey(a, b) { return (b.sentAt || 0) - (a.sentAt || 0) || (a.order || 0) - (b.order || 0); }
+  // 11-19 사용자 「댓글 써 있는 거 안 써 있는 거 섞여 있어」 — 댓글 없는 카드(건너뛰기 권장)는 맨 아래로
+  function noComment(c) { return !String(c.comment || '').trim(); }
+  function sortKey(a, b) { return (noComment(a) - noComment(b)) || (b.sentAt || 0) - (a.sentAt || 0) || (a.order || 0) - (b.order || 0); }
 
   // 위쪽 탭: 카드가 없어도 모든 계정 탭을 늘 보여 준다 (폰 번호를 골랐으면 그 폰 계정만). 숫자 = 아직 안 끝낸 카드
   var TAB_ORDER = ['cruise', 'gumon', 'insurance', 'insta_gm', 'insta_ar', 'insta_ins', 'insta'];
