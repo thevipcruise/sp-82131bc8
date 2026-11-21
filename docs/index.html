@@ -188,7 +188,9 @@ details .row, details textarea { margin-top: 8px; }
       // 2026-11-20 사용자 「인터넷 창 떴다 앱인데 그 게시물로 안 가져」 (홈 화면 아이콘) — https 주소 intent 를 폰이 앱으로 못 넘기면
       //   「대신 열 웹 주소」(browser_fallback_url)로 인터넷 창이 열리고, 인스타 웹이 앱 첫 화면으로만 보냈다.
       //   → 인스타 앱 전용 주소(instagram://media?id=…·user?username=…)를 앱 지정 intent 로 · 웹으로 빠지는 길은 없앤다 (안 열리면 아래 「웹으로」 작은 글씨)
-      href = 'intent://' + deep.replace(/^instagram:\/\//, '') + '#Intent;scheme=instagram;package=com.instagram.android;end';
+      // 2026-11-21 사용자 「인터넷창 거쳐서 어플에 가면서 해당 게시물로 안 가져」 — instagram://media?id=… 는 요즘 인스타 앱이 게시물로 안 보내고 첫 화면만 연다.
+      //   → 인스타 앱이 공유 링크로 받는 그 주소(https://www.instagram.com/p/코드/ · /아이디/)를 인스타 앱에 콕 집어 넘긴다. 웹으로 빠지는 길(browser_fallback_url)은 여전히 없음.
+      href = 'intent://' + web.replace(/^https:\/\//, '') + '#Intent;scheme=https;package=com.instagram.android;end';
     }
     var a = el('a', cls, text); a.href = href; a.rel = 'noopener';
     if (intent) {                                   // 앱이 안 열릴 때만 쓰는 작은 웹 링크 (단추 옆)
@@ -686,7 +688,7 @@ details .row, details textarea { margin-top: 8px; }
   document.addEventListener('visibilitychange', function () { var p = getPass(); if (!document.hidden && p) load(p, true); });
 
   // 2026-11-20 홈 화면 아이콘은 예전 화면을 오래 들고 있어서 고친 링크가 안 닿았다 → 다시 열 때 화면 코드가 바뀌었으면 새로 고침
-  var 판 = '1120a';
+  var 판 = '1121a';
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) return;
     fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); })
