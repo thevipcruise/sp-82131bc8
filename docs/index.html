@@ -208,19 +208,6 @@ details .row, details textarea { margin-top: 8px; }
     return a;
   }
   function mobile(url) { return String(url || '').replace('://blog.naver.com', '://m.blog.naver.com'); }
-  // 2026-11-21 사용자 「서이추 누르면 인터넷창 거쳐서 어플에 가면서 해당 게시물로 안 가져」 (안드로이드 · 홈 화면 아이콘)
-  //   새 창(target=_blank)으로 열면 인터넷 창이 먼저 뜨고, 네이버 웹이 블로그 앱을 첫 화면으로만 띄웠다.
-  //   → 안드로이드는 같은 주소를 블로그 앱(com.nhn.android.blog)에 바로 넘기는 intent 로 연다. 인터넷 창을 안 거치니 앱이 그 주소(글·서이추 화면)를 그대로 받는다.
-  //   웹으로 빠지는 길(browser_fallback_url)은 넣지 않는다 (인스타 11-20 때 그 길로 인터넷 창이 다시 떴다). 앱이 안 열리면 옆의 「웹으로」 작은 글씨.
-  function naverLink(cls, text, web) {
-    if (!/Android/i.test(navigator.userAgent) || !/^https:\/\/m\.blog\.naver\.com\//.test(web)) return link(cls, text, web);
-    var a = el('a', cls, text); a.rel = 'noopener';
-    a.href = 'intent://' + web.replace(/^https:\/\//, '') + '#Intent;scheme=https;package=com.nhn.android.blog;end';
-    var box = el('span', '', ''); box.style.display = 'inline-flex'; box.style.alignItems = 'center'; box.style.gap = '8px';
-    var w = el('a', '', '웹으로'); w.href = web; w.target = '_blank'; w.rel = 'noopener'; w.style.fontSize = '12px'; w.style.color = '#888';
-    box.appendChild(a); box.appendChild(w);
-    return box;
-  }
 
 
 
@@ -507,7 +494,7 @@ details .row, details textarea { margin-top: 8px; }
     var s1 = el('div', 'step');
     var l1 = el('div', 'lbl'); l1.innerHTML = '<b>①</b> 최신 글 읽고 ♡ 좋아요';
     s1.appendChild(l1);
-    s1.appendChild(naverLink('btn primary', '최신 글 열기', mobile(c.latestLink || 'https://blog.naver.com/' + c.blogId)));
+    s1.appendChild(link('btn primary', '최신 글 열기', mobile(c.latestLink || 'https://blog.naver.com/' + c.blogId)));
     if (c.latestTitle) s1.appendChild(el('div', 'title', c.latestTitle));
     card.appendChild(s1);
 
@@ -533,7 +520,7 @@ details .row, details textarea { margin-top: 8px; }
       var mb = el('button', 'primary', '멘트 복사');
       mb.onclick = function () { copy(bm.value, '서이추 멘트'); };
       r.appendChild(mb);
-      r.appendChild(naverLink('btn', '서이추 화면', 'https://m.blog.naver.com/BuddyAddForm.naver?blogId=' + encodeURIComponent(c.blogId)));
+      r.appendChild(link('btn', '서이추 화면', 'https://m.blog.naver.com/BuddyAddForm.naver?blogId=' + encodeURIComponent(c.blogId)));
       s3.appendChild(r);
       s3.appendChild(link('btn', '블로그 홈 (서이추 화면이 안 열릴 때)', 'https://m.blog.naver.com/' + encodeURIComponent(c.blogId)));
       card.appendChild(s3);
