@@ -412,6 +412,23 @@ details .row, details textarea { margin-top: 8px; }
     s1.appendChild(l1);
     var mid = igMediaId(String(c.postCode || '').slice(0, 11));
     s1.appendChild(igLink('btn primary', '게시물 열기 (인스타 앱)', mid ? 'instagram://media?id=' + mid : '', 'https://www.instagram.com/p/' + encodeURIComponent(c.postCode) + '/'));
+
+    // 2026-11-23 사용자 「인스타가 또 안 넘어가 · 게시물로 안 감」 — 세 번 고쳐도 안 돼서, 폰에서 실제로 게시물까지 가는 방식을 고르려고 시험 링크 6개를 잠깐 붙인다 (고른 뒤 지움)
+    (function () {
+      var code = encodeURIComponent(c.postCode), path = 'www.instagram.com/p/' + code + '/';
+      var tries = [
+        ['1', 'https://' + path, true],
+        ['2', 'https://' + path, false],
+        ['3', 'intent://' + path + '#Intent;scheme=https;package=com.instagram.android;end', false],
+        ['4', 'intent://' + path + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.instagram.android;end', false],
+        ['5', mid ? 'instagram://media?id=' + mid : 'instagram://', false],
+        ['6', 'https://instagram.com/p/' + code + '/', true],
+      ];
+      var row = el('div', '', ''); row.style.cssText = 'margin-top:6px;font-size:13px;color:#888;display:flex;gap:10px;align-items:center;flex-wrap:wrap';
+      row.appendChild(el('span', '', '안 되면 시험:'));
+      tries.forEach(function (t) { var a = el('a', '', t[0]); a.href = t[1]; if (t[2]) a.target = '_blank'; a.rel = 'noopener'; a.style.cssText = 'display:inline-block;min-width:28px;padding:4px 8px;border:1px solid #ccc;border-radius:6px;text-align:center;color:#333;text-decoration:none'; row.appendChild(a); });
+      s1.appendChild(row);
+    })();
     card.appendChild(s1);
 
     var s2 = el('div', 'step');
